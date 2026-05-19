@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CCS | Register</title>
+    <link rel="stylesheet" href="stylesheet.css">
+    <script src="db.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand-text">College of Computer Studies Sit-in Monitoring System</div>
+        <ul class="nav-links">
+            <li><a href="landingpage.html">Home</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="Login.html">Login</a></li>
+            <li><a href="singuppage.html">Register</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="signup-card">
+            <a href="index.html" class="back-btn">Back</a>
+            
+            <div class="flex-split">
+                <div class="form-side">
+                    <h1>Sign up</h1>
+                    <form id="signupForm">
+                        <div class="input-group"><input type="text" placeholder="ID Number"></div>
+                        <div class="input-group"><input type="text" placeholder="Last Name"></div>
+                        <div class="input-group"><input type="text" placeholder="First Name"></div>
+                        <div class="input-group"><input type="text" placeholder="Middle Name"></div>
+                        <div class="input-group"><input type="text" placeholder="Course Level"></div>
+                        <div class="input-group"><input type="password" placeholder="Password"></div>
+                        <div class="input-group"><input type="password" placeholder="Repeat your password"></div>
+                        <div class="input-group"><input type="email" placeholder="Email"></div>
+                        <div class="input-group"><input type="text" placeholder="Course"></div>
+                        <div class="input-group"><input type="text" placeholder="Address"></div>
+                        <button type="submit" class="register-btn">Register</button>
+                    </form>
+                </div>
+
+                <div class="image-side">
+                    <img src="https://illustrations.popsy.co/blue/work-from-home.svg" alt="Registration">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const form = this;
+            const inputs = form.querySelectorAll('input');
+            let isFormValid = true;
+            let firstEmptyInput = null;
+            inputs.forEach(input => {
+                input.style.borderColor = '#ddd';
+                if (input.value.trim() === "") {
+                    isFormValid = false;
+                    input.style.borderColor = '#e53e3e';
+                    if (!firstEmptyInput) firstEmptyInput = input;
+                }
+            });
+            if (!isFormValid) {
+                alert("Please fill up all fields before registering.");
+                if (firstEmptyInput) firstEmptyInput.focus();
+                return;
+            }
+            // gather values
+            const data = {
+                id: form.querySelector('input[placeholder="ID Number"]').value.trim(),
+                lastName: form.querySelector('input[placeholder="Last Name"]').value.trim(),
+                firstName: form.querySelector('input[placeholder="First Name"]').value.trim(),
+                middleName: form.querySelector('input[placeholder="Middle Name"]').value.trim(),
+                courseLevel: form.querySelector('input[placeholder="Course Level"]').value.trim(),
+                password: form.querySelector('input[placeholder="Password"]').value,
+                email: form.querySelector('input[placeholder="Email"]').value.trim(),
+                course: form.querySelector('input[placeholder="Course"]').value.trim(),
+                address: form.querySelector('input[placeholder="Address"]').value.trim()
+            };
+            try {
+                const existing = await db.getUser(data.id);
+                if (existing) {
+                    alert('An account with this ID already exists.');
+                    return;
+                }
+                await db.addUser(data);
+                alert('Registration successful! You can now log in.');
+                form.reset();
+                window.location.href = 'Login.html';
+            } catch (err) {
+                console.error(err);
+                alert('Error saving user. See console.');
+            }
+        });
+    </script>
+</body>
+</html>

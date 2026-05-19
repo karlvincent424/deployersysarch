@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- linked stylesheet for page styling -->
+    <link rel="stylesheet" href="stylesheet.css">
+    <script src="db.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand-text">College of Computer Studies Sit-in Monitoring System</div>
+        <ul class="nav-links">
+            <li><a href="loginpageafterlogin.html">Home</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Login</a></li>
+            <li><a href="landingpage.html">Logout</a></li>
+        </ul>
+    </nav>
+
+  
+    <script>
+        // offline authentication using IndexedDB via db.js
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const id = document.getElementById('loginId').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const user = await db.getUserByCredentials(id, password);
+                if (user) {
+                    alert('Login successful! Welcome ' + user.firstName + '.');
+                    // redirect or additional logic could go here
+                } else {
+                    alert('Invalid ID or password.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error during login. See console.');
+            }
+        });
+    </script>
+</body>
+</html>

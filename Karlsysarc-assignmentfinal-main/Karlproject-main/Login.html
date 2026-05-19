@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- linked stylesheet for page styling -->
+    <link rel="stylesheet" href="stylesheet.css">
+    <script src="db.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand-text">College of Computer Studies Sit-in Monitoring System</div>
+        <ul class="nav-links">
+            <li><a href="landingpage.html">Home</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Login</a></li>
+            <li><a href="singuppage.html">Register</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="login-card">
+            <h1>Welcome Back</h1>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input id="loginId" type="text" placeholder="ID Number" required>
+                </div>
+                <div class="input-group">
+                    <input id="loginPassword" type="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-login"> <a href="loginpageafterlogin.html">Log in</a></button>
+            </form>
+            <p class="signup-link">Don't have an account? <a href="singuppage.html">Sign up here.</a></p>
+        </div>
+    </div>
+
+    <script>
+        // offline authentication using IndexedDB via db.js
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const id = document.getElementById('loginId').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            if (!id || !password) {
+                alert('Please fill both fields.');
+                return;
+            }
+            try {
+                // first check whether the ID exists at all
+                const existing = await db.getUser(id);
+                if (!existing) {
+                    if (confirm('No account found with that ID. Would you like to register now?')) {
+                        window.location.href = 'singuppage.html';
+                    }
+                    return; // stop further processing
+                }
+                const user = await db.getUserByCredentials(id, password);
+                if (user) {
+                    alert('Login successful! Welcome ' + user.firstName + '.');
+                    // go to post-login page
+                    window.location.href = 'loginpageafterlogin.html';
+                } else {
+                    alert('Incorrect password.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error during login. See console.');
+            }
+        });
+    </script>
+</body>
+</html>
